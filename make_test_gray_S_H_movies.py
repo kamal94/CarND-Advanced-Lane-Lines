@@ -106,18 +106,11 @@ def get_gray_S(image):
     return np.dstack((binary, binary, binary))*255
 
 
-gray_S_G = 'gray_S_H_2.mp4'
-gray_S = 'gray_S_2.mp4'
-clip1 = VideoFileClip("harder_challenge_video.mp4")
+
+gray_S_G = 'gray_S_H.mp4'
+gray_S = 'gray_S.mp4'
+clip1 = VideoFileClip("project_video.mp4")
 gray_S_G_clip = clip1.fl_image(get_gray_S_H) #NOTE: this function expects color images!!
 gray_S_G_clip.write_videofile(gray_S_G, audio=False)
 gray_S_clip = clip1.fl_image(get_gray_S_H) #NOTE: this function expects color images!!
 gray_S_clip.write_videofile(gray_S, audio=False)
-
-# gray_S_G = 'gray_S_H.mp4'
-# gray_S = 'gray_S.mp4'
-# clip1 = VideoFileClip("project_video.mp4")
-# gray_S_G_clip = clip1.fl_image(get_gray_S_H) #NOTE: this function expects color images!!
-# gray_S_G_clip.write_videofile(gray_S_G, audio=False)
-# gray_S_clip = clip1.fl_image(get_gray_S_H) #NOTE: this function expects color images!!
-# gray_S_clip.write_videofile(gray_S, audio=False)
