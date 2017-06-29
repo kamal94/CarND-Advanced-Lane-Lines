@@ -216,6 +216,44 @@ def get_lane_fit_image(image, plot=False):
     # Combine the result with the original image
     result = cv2.addWeighted(undist, 1, newwarp, 0.3, 0)
     
+
+    lefty_max = np.max(lefty)
+    righty_max = np.max(rightx)
+    y_eval = np.max([lefty_max, righty_max])
+    # Define conversions in x and y from pixels space to meters
+    ym_per_pix = 30/720 # meters per pixel in y dimension
+    xm_per_pix = 3.7/700 # meters per pixel in x dimension
+
+    # Fit new polynomials to x,y in world space
+    left_fit_cr = np.polyfit(lefty*ym_per_pix, leftx*xm_per_pix, 2)
+    right_fit_cr = np.polyfit(righty*ym_per_pix, rightx*xm_per_pix, 2)
+    # Calculate the new radii of curvature
+    left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) \
+    / np.absolute(2*left_fit_cr[0])
+    right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) \
+    / np.absolute(2*right_fit_cr[0])
+    avg_curverad = (left_curverad + right_curverad)/2
+    if avg_curverad > 3000.:
+        avg_curverad = 0.
+        
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(result,"curvature radius: " +str(avg_curverad),(500,700), font, 1,(255,255,255),2)
+
+    mid_point_btwn_lanes = (rightx[0] + leftx[0])//2
+    off_center = midpoint - mid_point_btwn_lanes
+    off_center_in_meters = off_center * 3.7/700
+    off_center_caption = "Car offcenter by " + str(np.abs(off_center_in_meters))[:5]
+    if off_center_in_meters < 0:
+        off_center_caption += "m R"
+    else:
+        off_center_caption += "m L"
+        
+    cv2.putText(result, off_center_caption,(500,650), font, 1,(255,255,255),2)
+    cv2.line(result, (mid_point_btwn_lanes, result.shape[0]-100), \
+             (midpoint, result.shape[0]-100), (255, 0, 0), thickness=5)
+    cv2.line(result, (mid_point_btwn_lanes, result.shape[0]-80), \
+             (mid_point_btwn_lanes, result.shape[0]-120), (0, 0, 255), thickness=2)
+
     # plot if required
     if plot:
         import matplotlib.pyplot as plt
@@ -231,9 +269,9 @@ def get_lane_fit_image(image, plot=False):
         ax3.plot(left_fitx, lefty, color='green', linewidth=3)
         ax3.plot(right_fitx, righty, color='green', linewidth=3)
         ax3.invert_yaxis() # to visualize as we do the images
-        ax2.set_title('Polynomial fit', fontsize=30)
+        ax3.set_title('Polynomial fit', fontsize=30)
         ax4.imshow(result)
-        ax2.set_title('Result', fontsize=30)
+        ax4.set_title('Result', fontsize=30)
     
     
     return result
