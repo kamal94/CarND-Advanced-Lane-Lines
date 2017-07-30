@@ -22,7 +22,7 @@ The goals / steps of this project are the following:
 [image7]: ./output_images/curvature.png "Curvature"
 [video1]: ./final.mp4 "Video"
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
+## Rubric Points
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
